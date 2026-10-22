@@ -1,8 +1,33 @@
 # Communication Systems — GitHub Pages edition
 
-An interactive Communication Systems notebook: Lectures 0–2, 15 learning sections, nine types of signal experiment, two guided exercise sheets, personal notes, and textbook references.
+An interactive Communication Systems lab and notebook: Lectures 0–2, 15 learning sections, nine types of signal experiment, two guided exercise sheets, personal notes, and textbook references.
 
 **Start here:** publish the included, already-built `docs` folder. You do not need Node.js, an API key, an account system, a database, or a build command for the first publication.
+
+## New: follow your own message through the radio
+
+The home page is now an interactive transmitter/receiver map. Type a message and choose **Play journey**, or click any of its ten nodes:
+
+**Text → encoding → PAM pulses → DAC → RF + antenna → EM field → receive RF → ADC → DSP decisions → decoded text.**
+
+- Click characters to see their real UTF-8 bytes, hexadecimal values, and binary bits. ASCII `Hello` is 5 bytes, 40 bits, and 20 4-PAM symbols.
+- Inspect the binary logic waveform, bit pairs, and the corresponding rectangular PAM waveform. Switch to raised-cosine pulses and change the symbol rate.
+- Compare held DAC values with an ideal reconstructed voltage, and see how multiplying by a carrier makes an RF waveform.
+- Explore the antenna, electric/magnetic fields, and the hardware at each end.
+- Change sample rate and ADC resolution. Inspect individual measured values, quantization errors, and the ADC's binary amplitude codes.
+- Change gain, noise, and decision timing; compare the received text and actual bit errors. **Animate signal** runs a waveform cursor and live ADC readouts without changing the selected step.
+- Open **Course map** for a connected view of all chapters. The old permanent sidebar is now a **Chapters** drawer; notes expand only when you want them.
+
+The simulation uses the lecture/book's 4-PAM mapping. RF and electromagnetic views are explanatory models; the receiver calculation uses equivalent baseband, ideal carrier alignment, and actual quantized ADC samples. Read **About this learning model** on the page for its assumptions.
+
+### If your GitHub Pages site is already published
+
+1. Download and extract this updated ZIP.
+2. Replace the files in the **same repository** with the extracted project contents, including the complete updated `docs` directory. Keep `docs` at the repository root.
+3. Commit/push the change. Leave Pages set to **main → /docs**.
+4. Wait for the Pages deployment, then refresh the website. Hard-refresh if the browser still displays the earlier layout.
+
+The note storage keys and section IDs are unchanged, so existing browser notes remain available at the same site URL. JSON and Markdown imports from the earlier version are still supported. Download a backup before migrating to another URL or device.
 
 ## 1. Publish using GitHub’s website
 
@@ -89,6 +114,9 @@ Follow the URL printed by Vite.
 | `src/course.ts` | Chapters, lesson text, note outlines, book references, recall checks, and guided problems |
 | `src/experiments.tsx` | Interactive plots and their controls |
 | `src/signals.ts` | Signal calculations: cosines, aliases, power, noise, spectra |
+| `src/journey.tsx` | Interactive signal journey and connected course map |
+| `src/transmission.ts` | UTF-8 encoding, pulse shaping, channel, ADC, and PAM recovery |
+| `src/journey.css` | Map workspace, top navigation, responsive visual experiments |
 | `src/notebook.tsx` | Notebook layout, navigation, notes, and progress |
 | `src/storage.ts` | Backup parsing, Markdown export/import, note merging |
 | `src/materials.tsx` | Local PDF attachment and book-page opening |
@@ -124,7 +152,7 @@ The note storage key is separated by repository path. Hosting another notebook u
 
 ## 9. What was checked
 
-The source passes TypeScript checking and a production Vite build. The included tests check aliases, cosine power, the spectrum of a squared cosine, JSON/Markdown round-trips, nested headings in notes, non-destructive merging, invalid backup handling, and separation of storage keys by repository path. The deployment output is checked for relative local assets and absence of server endpoints or bundled private notes.
+The source passes TypeScript checking and a production Vite build. The included tests check aliases, cosine power, the spectrum of a squared cosine, JSON/Markdown round-trips, nested headings in notes, non-destructive merging, invalid backup handling, and separation of storage keys by repository path. They also verify UTF-8/emoji encoding, exact Hello bit and PAM mapping, clean end-to-end reception for both pulse shapes, ADC codes and clipping, gain correction, reproducible noise, low-resolution errors, and symbol decisions made from actual ADC samples. The deployment output is checked for relative local assets and absence of server endpoints or bundled private notes.
 
 Publishing in your own GitHub account is a separate step performed by you; this ZIP does not create a repository or change your existing site.
 

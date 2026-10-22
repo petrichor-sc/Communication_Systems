@@ -1,3 +1,3 @@
 import {defineConfig} from 'vite';
 import react from '@vitejs/plugin-react';
-export default defineConfig({plugins:[react()],base:'./',build:{outDir:'docs',emptyOutDir:true}});
+export default defineConfig({plugins:[react()],base:'./',server:{allowedHosts:['terminal.local']},build:{outDir:'docs',emptyOutDir:true}});

@@ -16,3 +16,12 @@ attached locally under Source materials; they are not bundled in this package.
 
 README.md contains the complete instructions, local development commands,
 updates, automatic GitHub Actions deployment, and troubleshooting.
+
+ALREADY PUBLISHED?
+Replace the project contents in your existing repository, including all of docs,
+then commit/push. Keep Pages set to main > /docs. Your existing site URL stays
+the same, and browser notes at that URL remain compatible.
+
+Start with Signal journey: type Hello, click a node, or press Play journey.
+Use Animate signal to keep a waveform moving while exploring one step.
+Course map connects all lecture sections; Chapters opens the optional drawer.
