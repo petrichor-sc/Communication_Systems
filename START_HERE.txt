@@ -25,3 +25,8 @@ the same, and browser notes at that URL remain compatible.
 Start with Signal journey: type Hello, click a node, or press Play journey.
 Use Animate signal to keep a waveform moving while exploring one step.
 Course map connects all lecture sections; Chapters opens the optional drawer.
+
+APP UPDATE
+Dark theme with purple accents, a live signal illustration beside the map,
+pause-on-explore playback, developer credit, and an About page are included.
+Website/domain integration is deferred; this package changes only the app.

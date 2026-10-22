@@ -4,6 +4,16 @@ An interactive Communication Systems lab and notebook: Lectures 0–2, 15 learni
 
 **Start here:** publish the included, already-built `docs` folder. You do not need Node.js, an API key, an account system, a database, or a build command for the first publication.
 
+The default appearance is now a high-contrast dark theme with purple accents, brighter graph labels, and larger text throughout.
+
+## New: a live signal illustration beside the map
+
+The map now sits beside a **live signal illustration**. Choose a step without scrolling away. Playback pauses when you adjust a control, scroll inside the illustration, or open the detailed explanation. **Hold this step** freezes the journey; **Animate signal** keeps a waveform moving while you study one step.
+
+The header credits **Sarthak Chadha** and links to the new **About** page. All pages use a high-contrast dark theme with purple accents and brighter, larger labels.
+
+This package focuses on the Communication Systems app. It remains a standalone static app with relative asset paths, ready to integrate into a website later. The `docs` layout still updates your existing GitHub Pages site.
+
 ## New: follow your own message through the radio
 
 The home page is now an interactive transmitter/receiver map. Type a message and choose **Play journey**, or click any of its ten nodes:
@@ -114,6 +124,8 @@ Follow the URL printed by Vite.
 | `src/course.ts` | Chapters, lesson text, note outlines, book references, recall checks, and guided problems |
 | `src/experiments.tsx` | Interactive plots and their controls |
 | `src/signals.ts` | Signal calculations: cosines, aliases, power, noise, spectra |
+| `src/about.tsx` | Developer page and project acknowledgements |
+| `src/dark.css` | Dark purple theme and live illustration layout |
 | `src/journey.tsx` | Interactive signal journey and connected course map |
 | `src/transmission.ts` | UTF-8 encoding, pulse shaping, channel, ADC, and PAM recovery |
 | `src/journey.css` | Map workspace, top navigation, responsive visual experiments |
