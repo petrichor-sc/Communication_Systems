@@ -1,8 +1,8 @@
 export type PulseShape = 'rectangular' | 'raised-cosine';
 export type EncodedCharacter = {character:string; bytes:number[]; byteOffset:number};
 export type EncodedMessage = {characters:EncodedCharacter[]; bytes:number[]; bits:string; symbols:number[]};
-export type RadioSettings = {pulse:PulseShape; symbolRate:number; carrierCycles:number; gain:number; noise:number; seed:number; adcBits:number; samplesPerSymbol:number; timing:number; correctGain:boolean};
-export const defaultRadio:RadioSettings = {pulse:'rectangular',symbolRate:4,carrierCycles:6,gain:1,noise:0,seed:7,adcBits:6,samplesPerSymbol:8,timing:0,correctGain:true};
+export type RadioSettings = {pulse:PulseShape; symbolRate:number; carrierCycles:number; gain:number; noise:number; seed:number; adcBits:number; samplesPerSymbol:number; timing:number; correctGain:boolean; delay:number; echoGain:number; echoDelay:number; fadeDepth:number; fadeRate:number; interference:number; interferenceRate:number; trackDelay:boolean; trackFading:boolean};
+export const defaultRadio:RadioSettings = {pulse:'rectangular',symbolRate:4,carrierCycles:6,gain:1,noise:0,seed:7,adcBits:6,samplesPerSymbol:8,timing:0,correctGain:true,delay:0,echoGain:0,echoDelay:1,fadeDepth:0,fadeRate:.12,interference:0,interferenceRate:.7,trackDelay:true,trackFading:false};
 export const pamAlphabet = [{bits:'00',level:-3},{bits:'01',level:-1},{bits:'10',level:1},{bits:'11',level:3}];
 export function encodeText(text:string):EncodedMessage {
  const encoder=new TextEncoder();let byteOffset=0;
@@ -29,7 +29,16 @@ export function noiseValue(u:number,seed:number):number {
  let value=0;for(let k=0;k<16;k++)value+=Math.cos(2*Math.PI*((.04+.56*uniform(k,seed))*u+uniform(k+31,seed)));
  return value*Math.sqrt(2/16);
 }
-export function channelValue(symbols:number[],u:number,s:RadioSettings){return s.gain*shapedValue(symbols,u,s.pulse)+(s.noise? s.noise*noiseValue(u,s.seed):0);}
+export function channelGain(u:number,s:RadioSettings){return s.gain*(1-s.fadeDepth*(1+Math.cos(2*Math.PI*s.fadeRate*u))/2);}
+// Equivalent-baseband channel. Delays are in symbol intervals T, not seconds.
+export function channelComponents(symbols:number[],u:number,s:RadioSettings){
+ const direct=channelGain(u,s)*shapedValue(symbols,u-s.delay,s.pulse);
+ const echo=s.gain*s.echoGain*shapedValue(symbols,u-s.delay-s.echoDelay,s.pulse);
+ const interference=s.interference*Math.cos(2*Math.PI*s.interferenceRate*u);
+ const noise=s.noise? s.noise*noiseValue(u,s.seed):0;
+ return {direct,echo,interference,noise,total:direct+echo+interference+noise};
+}
+export function channelValue(symbols:number[],u:number,s:RadioSettings){return channelComponents(symbols,u,s).total;}
 export function quantize(value:number,bits:number,range=4){
  const levels=2**bits,step=2*range/levels,code=Math.max(0,Math.min(levels-1,Math.floor((value+range)/step)));
  return {code,binary:code.toString(2).padStart(bits,'0'),value:-range+(code+.5)*step,step,clipped:value< -range||value>=range};
@@ -42,8 +51,9 @@ export function adcSample(symbols:number[],index:number,s:RadioSettings){
 }
 export function receiveMessage(encoded:EncodedMessage,s:RadioSettings){
  const decisions=encoded.symbols.map((original,k)=>{
-  const index=Math.max(0,Math.min(encoded.symbols.length*s.samplesPerSymbol-1,Math.round((k+.5+s.timing)*s.samplesPerSymbol)));
-  const sample=adcSample(encoded.symbols,index,s),corrected=sample.value/(s.correctGain?s.gain:1),decided=decidePam(corrected);
+  const index=Math.max(0,Math.round((k+.5+s.timing+(s.trackDelay?s.delay:0))*s.samplesPerSymbol));
+  const sample=adcSample(encoded.symbols,index,s),gain=s.trackFading?channelGain(sample.u,s):s.gain;
+  const corrected=sample.value/(s.correctGain?gain:1),decided=decidePam(corrected);
   return {...sample,original,corrected,decided,bits:levelBits(decided),error:decided!==original};
  });
  const bits=decisions.map(d=>d.bits).join(''),bytes=Array.from({length:bits.length/8},(_,i)=>parseInt(bits.slice(i*8,i*8+8),2));

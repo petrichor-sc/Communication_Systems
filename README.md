@@ -6,6 +6,33 @@ An interactive Communication Systems lab and notebook: Lectures 0–2, 15 learni
 
 The default appearance is now a high-contrast dark theme with purple accents, brighter graph labels, and larger text throughout.
 
+## Version 1.3: open the transmitter and receiver separately
+
+Choose an explorer below the message box, or use **Explore transmitter / Explore receiver** inside the outlined regions of the whole-journey map.
+
+- **Explore transmitter:** text, coder, discrete PAM symbols, pulse shaping, baseband, frequency translation, and passband/RF. Click a byte or character to inspect its actual hex and bits. A space is encoded too. Separate source-coding and repetition error-coding toys explain slide 22; they do not silently change the main transmitted message.
+- **Physical channel:** the branching diagram from slide 18, with direct-path gain/fading and delay, multipath echoes, a narrowband interferer, and repeatable noise. Inspect each contribution, combine effects, and compare the received text. Presets isolate the effects.
+- **Explore receiver:** received RF, frequency translation, baseband, sampling, symbol quantization, decoding, and reconstructed text. ADC voltage codes and PAM symbol decisions are explicitly distinguished.
+- **Inside the software receiver:** the six blocks from slide 24, with working focused experiments for carrier mismatch, rectangular matched filtering, timing-adjusted downsampling, a known one-symbol echo inverse, nearest-level decisions, and frame correlation.
+- **ASP / DSP:** FDM band selection, the 868 − 864.43 = 3.57 MHz mixer example, filtering/AGC, time sampling/aliasing versus amplitude resolution, and every ASP/DSP task from slide 21.
+- **Lecture 0 guide:** every printed slide 1–25 is covered in grouped topics, with dedicated entries for slides 18–24, experiment links, book references, and prompts for your own notes. PDF page numbers differ because the lecture contains animation builds.
+
+Each path has its own **Play**, **Pause**, **Replay**, previous/next controls, and reading pace. Playback stays in that path. Changing a control, selecting a block, editing the message, or scrolling in the live illustration pauses it. The two panels stay aligned on desktop; the Data → Voltage → EM field → Voltage → Data legend has its own clear strip above the main diagram.
+
+### A first walkthrough
+
+1. Type **Hello**. In the transmitter, open Coder and Symbols: H = 0x48 = 01001000 = −1, −3, +1, −3.
+2. Play the transmitter path; compare rectangular and raised-cosine pulses.
+3. Choose **Physical channel → Echo**, then click **Received signal**. Compare the text and bit errors.
+4. Open the receiver, then **Inside the software receiver**. Toggle the known echo inverse and inspect Decider/Decoder. This is a separate focused receiver experiment, using the same message.
+5. In ASP / DSP, calculate RF/LO/IF, then reduce the ADC sample frequency and inspect aliasing. Finish by saving one observation in your own words.
+
+### What the models calculate
+
+The main 4-PAM link computes a real equivalent-baseband signal, an actual finite-resolution ADC measurement, gain/timing correction using selected known parameters, nearest-level symbol decisions, and UTF-8 decoding. Its channel includes a smooth fading model, fixed delay, one echo, a sinusoidal interferer, and deterministic band-limited noise. It does not estimate these parameters adaptively or equalize the echo automatically.
+
+The separate software receiver uses rectangular pulses, 16 measurements per symbol, a normalized post-mixer baseband model, an 8-bit ADC over ±8 V, a causal boxcar matched filter, and an optional known one-symbol echo inverse. Its frame-correlation demonstration adds a clean seven-symbol training marker before the payload and searches a known acquisition window. Source/error coding toys are separate. RF/EM drawings and ideal band-selection graphics explain the operations; they are not full physical RF simulations or the Chapter 15 M6 receiver.
+
 ## New: a live signal illustration beside the map
 
 The map now sits beside a **live signal illustration**. Choose a step without scrolling away. Playback pauses when you adjust a control, scroll inside the illustration, or open the detailed explanation. **Hold this step** freezes the journey; **Animate signal** keeps a waveform moving while you study one step.
@@ -28,7 +55,7 @@ The home page is now an interactive transmitter/receiver map. Type a message and
 - Change gain, noise, and decision timing; compare the received text and actual bit errors. **Animate signal** runs a waveform cursor and live ADC readouts without changing the selected step.
 - Open **Course map** for a connected view of all chapters. The old permanent sidebar is now a **Chapters** drawer; notes expand only when you want them.
 
-The simulation uses the lecture/book's 4-PAM mapping. RF and electromagnetic views are explanatory models; the receiver calculation uses equivalent baseband, ideal carrier alignment, and actual quantized ADC samples. Read **About this learning model** on the page for its assumptions.
+The simulation uses the lecture/book's 4-PAM mapping. RF and electromagnetic views are explanatory models; the main receiver calculation uses equivalent baseband, ideal carrier alignment, and actual quantized ADC samples. The software receiver experiment separately exposes carrier mismatch and selected recovery operations. Read **About this learning model** on the page for its assumptions.
 
 ### If your GitHub Pages site is already published
 

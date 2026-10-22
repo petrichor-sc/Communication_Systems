@@ -26,7 +26,16 @@ Start with Signal journey: type Hello, click a node, or press Play journey.
 Use Animate signal to keep a waveform moving while exploring one step.
 Course map connects all lecture sections; Chapters opens the optional drawer.
 
-APP UPDATE
+APP UPDATE — VERSION 1.3
+Separate transmitter and receiver explorers now have outlined boundaries,
+clickable text / code / symbols / baseband / RF stages, and their own replay.
+The physical-channel diagram includes fading, delay, echo, interference and noise.
+ASP / DSP covers RF-to-IF mixing, filtering, ADC sampling and aliasing.
+Inside the software receiver opens all six blocks from Lecture 0 slide 24.
+The Lecture 0 guide covers printed slides 1–25, including dedicated 18–24 topics,
+book references, and prompts that save to My notes.
+The Data / Voltage / EM field legend is clearly separated above the main map.
+
 Dark theme with purple accents, a live signal illustration beside the map,
 pause-on-explore playback, developer credit, and an About page are included.
 Website/domain integration is deferred; this package changes only the app.

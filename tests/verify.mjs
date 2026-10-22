@@ -65,3 +65,50 @@ for(const d of receiveMessage(hello,{...defaultRadio,timing:.2}).decisions){
  assert.equal(d.u*defaultRadio.samplesPerSymbol,d.index);
 }
 console.log('Passed: signal calculations; JSON/Markdown backups; legacy compatibility; UTF-8 bytes and PAM mapping; clean end-to-end recovery; raised-cosine symbol centers; ADC clipping and codes; resolution, gain, and noise failures; actual sample timing.');
+
+// Lecture 0 channel, coding, and focused software-receiver calculations.
+const {channelComponents,channelGain}=await import('../src/transmission.ts');
+const {mixerFrequencies,repetitionEncode,repetitionDecode,movingAverage,undoOneSymbolEcho,frameCorrelation,demoPreamble,softwareReceiver,defaultSoftware}=await import('../src/lecture0-model.ts');
+const channelSettings={...defaultRadio,gain:.7,delay:1,echoGain:.4,echoDelay:1,interference:.3,noise:.2};
+const components=channelComponents(hello.symbols,2.5,channelSettings);
+assert.equal(components.direct,.7*hello.symbols[1]);
+assert.equal(components.echo,.7*.4*hello.symbols[0]);
+assert.equal(components.total,components.direct+components.echo+components.interference+components.noise);
+const fading={...defaultRadio,fadeDepth:.8};
+assert.ok(Math.abs(channelGain(0,fading)-.2)<1e-10);
+assert.ok(Math.abs(channelGain(.5/fading.fadeRate,fading)-1)<1e-10);
+assert.equal(receiveMessage(hello,{...defaultRadio,delay:2}).text,'Hello');
+assert.ok(receiveMessage(hello,{...defaultRadio,delay:2,trackDelay:false}).bitErrors>0);
+assert.ok(receiveMessage(hello,fading).bitErrors>0);
+assert.equal(receiveMessage(hello,{...fading,trackFading:true}).bitErrors,0);
+assert.ok(receiveMessage(hello,{...defaultRadio,echoGain:.6}).bitErrors>0);
+const mixed=mixerFrequencies(868,3.57);
+assert.ok(Math.abs(mixed.lo-864.43)<1e-9);
+assert.ok(Math.abs(mixed.difference-3.57)<1e-9);
+assert.ok(Math.abs(mixed.sum-1732.43)<1e-9);
+const coded=repetitionEncode('01001000');
+assert.equal(coded.length,24);
+assert.equal(repetitionDecode(coded),'01001000');
+assert.equal(repetitionDecode('1'+coded.slice(1)),'01001000');
+assert.notEqual(repetitionDecode('11'+coded.slice(2)),'01001000');
+assert.deepEqual(movingAverage([4,0,0,0,0],4),[1,1,1,1,0]);
+const sequence=[-1,-3,1,-3,3,1];
+for(const alpha of [0,.3,.6,.8]){
+ const echoed=sequence.map((v,i)=>v+alpha*(sequence[i-1]??0));
+ undoOneSymbolEcho(echoed,alpha).forEach((v,i)=>assert.ok(Math.abs(v-sequence[i])<1e-9));
+}
+for(const leading of [0,1,3,8])for(const text of ['Hello','Hi 🌊','é','']){
+ const result=softwareReceiver(encodeText(text),{...defaultSoftware,noise:0,echo:.6,leading});
+ assert.equal(result.detected.offset,leading);
+ assert.equal(result.detected.value,1);
+ assert.equal(result.text,text);
+ assert.equal(result.bitErrors,0);
+ assert.ok(result.samples.every((p,i)=>p.index===(i+1)*16-1),'Matched-filter sampling includes the causal filter delay.');
+}
+const reference={...defaultSoftware,noise:0,echo:.6};
+assert.ok(softwareReceiver(hello,{...reference,equalize:false}).bitErrors>0);
+assert.equal(softwareReceiver(hello,{...reference,equalize:true}).bitErrors,0);
+assert.ok(softwareReceiver(hello,{...reference,echo:0,phase:90,carrierCorrection:false}).bitErrors>0);
+assert.equal(softwareReceiver(hello,{...reference,phase:90,carrierCorrection:true}).bitErrors,0);
+assert.equal(frameCorrelation([...Array(3).fill(0),...demoPreamble],demoPreamble).at(-1).value,1);
+console.log('Passed: channel branch addition, fading bounds, echo corruption, delay/fading tracking, RF/IF mixer products, repetition-code recovery/failure, causal matched filtering, one-echo inverse, frame correlation, UTF-8 software recovery, and carrier mismatch/correction.');
