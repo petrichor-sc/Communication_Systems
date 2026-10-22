@@ -1,0 +1,18 @@
+COMMUNICATION SYSTEMS — PUBLISH IN A FEW STEPS
+
+1. Extract this ZIP.
+2. Create a new public GitHub repository, for example communication-systems.
+3. Upload the CONTENTS of the communication-systems-github-pages folder.
+   The repository root should contain docs, src, package.json, and README.md.
+4. Open Settings > Pages.
+5. Select Deploy from a branch > main > /docs > Save.
+6. When GitHub finishes, click Visit site and share that link.
+
+The docs folder is already built. You do not need to install Node.js for this route.
+
+Each person's notes stay in their browser. In My notes, use Download backup and
+Import backup / notes to transfer notes between devices. Source PDFs can be
+attached locally under Source materials; they are not bundled in this package.
+
+README.md contains the complete instructions, local development commands,
+updates, automatic GitHub Actions deployment, and troubleshooting.
